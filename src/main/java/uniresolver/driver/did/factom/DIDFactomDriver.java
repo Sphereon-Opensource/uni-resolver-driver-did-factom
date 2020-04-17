@@ -2,6 +2,7 @@ package uniresolver.driver.did.factom;
 
 import did.DIDDocument;
 import did.DIDURL;
+import org.blockchain_innovation.factom.client.api.ops.StringUtils;
 import org.blockchain_innovation.factom.client.impl.AbstractClient;
 import org.blockchain_innovation.factom.identiy.did.IdentityClient;
 import org.blockchain_innovation.factom.identiy.did.entry.EntryValidation;
@@ -18,7 +19,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,16 +29,12 @@ public class DIDFactomDriver implements Driver {
 
     private IdentityClient getClient() {
         if (identityClient == null) {
-            this.identityClient = new IdentityClient.Builder().mode(IdentityClient.Mode.OFFLINE_SIGNING).properties(getProperties()).build();
+            this.identityClient = new IdentityClient.Builder().mode(IdentityClient.Mode.OFFLINE_SIGNING).properties((Map) properties()).build();
         }
         return identityClient;
     }
 
-    protected Properties getProperties() {
-        Properties properties = new Properties();
-        properties.putAll(properties());
-        return properties;
-    }
+
 
     private final Pattern DID_FACTOM_PATTERN = Pattern.compile("^did:factom:.+");
 
@@ -115,8 +111,14 @@ public class DIDFactomDriver implements Driver {
     @Override
     public Map<String, Object> properties() {
         Map<String, Object> props = new HashMap<>();
-        props.put("factomd.url", "http://136.144.204.97:8088/v2");
+//        props.put("factomd.url", getEnvVar("MAINNET_FACTOMD_URL", "https://api.factomd.net/v2"));
+        props.put("factomd.url", getEnvVar("TESTNET_FACTOMD_URL", "https://dev.factomd.net/v2"));
         return props;
+    }
+
+    private String getEnvVar(String envKey, String defaultValue) {
+        String value = System.getenv(envKey);
+        return StringUtils.isNotEmpty(value) ? value : defaultValue;
     }
 
 

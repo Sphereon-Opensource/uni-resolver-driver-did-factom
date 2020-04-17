@@ -9,7 +9,10 @@
         <profile>
             <id>github</id>
             <repositories>
-
+                <repository>
+                    <id>central</id>
+                    <url>https://repo.maven.apache.org/maven2</url>
+                </repository>
                 <repository>
                     <id>sphereon-opensource-releases</id>
                     <name>Sphereon Opensource Releases</name>
@@ -17,6 +20,9 @@
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
                 </repository>
                 <repository>
                     <id>sphereon-opensource-snapshots</id>
@@ -25,10 +31,9 @@
                     <snapshots>
                         <enabled>true</enabled>
                     </snapshots>
-                </repository>
-                <repository>
-                    <id>central</id>
-                    <url>https://repo.maven.apache.org/maven2</url>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
                 </repository>
                 <repository>
                     <id>github-universal-resolver</id>
