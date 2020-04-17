@@ -4,10 +4,18 @@
 
 This is a [Universal Resolver](https://github.com/decentralized-identity/universal-resolver/) driver for **did:factom** identifiers.
 
+![CI/CD Workflow for driver-did-factom](https://github.com/Sphereon-Opensource/driver-did-factom/workflows/CI/CD%20Workflow%20for%20driver-did-factom/badge.svg?branch=develop)
 ## Specifications
 
 * [Decentralized Identifiers](https://w3c.github.io/did-core/)
 * [Factom DID Method Specification](https://github.com/bi-foundation/FIS/blob/feature/DID/FIS/DID.md)
+
+##
+
+The factom driver uses the [factom-identity-java](https://github.com/Sphereon-Opensource/factom-identity-java) client as
+well as [java gson models](https://github.com/Sphereon-Opensource/factom-identity-schema) which are generated from an OpenAPI v3 specification.
+
+A drop in replacement for the universal resolver endpoints is available in the [Factom Identity Server](https://github.com/Sphereon-Opensource/factom-identity-server)
 
 ## Example DIDs
 
@@ -34,8 +42,16 @@ curl -X GET http://localhost:8080/1.0/identifiers/did:factom:6aa7d4afe4932885b5b
 ## Build (native Java)
 Maven build:
 
+    export GITHUB_READ_PACKAGES_OWNER="<github_username>" 
+    export GITHUB_READ_PACKAGES_TOKEN="<github_token>"
 	mvn --settings settings.xml clean install
  
+## Build CI/CD (as Github action)
+Make sure to have 3 secrets available in Github:
+ * DOCKER_USERNAME - The Dockerhub username to push images
+ * DOCKER_PASSWORD - The Dockerhub password to push images
+ * MAVEN_SETTINGS - The base64 encoded maven settings.xml from this repo, with the GITHUB_READ_PACKAGES variables replaced by your username and personal accesstoken
+
 ## Driver Environment Variables
 
 `uniresolver_driver_did_work_apikey` an API Key to allow throttling

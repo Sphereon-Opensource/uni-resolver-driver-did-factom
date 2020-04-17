@@ -5,17 +5,18 @@ MAINTAINER Sphereon <dev@sphereon.com>
 
 ARG GITHUB_READ_PACKAGES_OWNER
 ARG GITHUB_READ_PACKAGES_TOKEN
-ADD ./settings.xml /root/.m2/
 
-# build driver-did-factom
 
-ADD . /opt/driver-did-factom
-RUN cd /opt/driver-did-factom && cat /opt/driver-did-factom/docker/run-driver-did-factom.sh && mvn --settings settings.xml clean install package -N -DskipTests
+# Driver arguments
+ARG TESTNET_FACTOMD_URL=https://dev.factomd.net/v2
+ARG MAINNET_FACTOMD_URL=https://api.factomd.net/v2
+ARG CUSTOM_FACTOMD_URL=https://dev.factomd.net/v2
 
-# variables
-ENV factomd_url=https://dev.factomd.net/v2
-# ENV uniresolver_driver_did_work_domain=https://credentials.id.workday.com
 # done
+
+ADD ./settings.xml /root/.m2/
+ADD . /opt/driver-did-factom
+RUN cd /opt/driver-did-factom && echo "Factomd URL: $TESTNET_FACTOMD_URL" && mvn --settings settings.xml clean install package -N -DskipTests
 
 EXPOSE 8080
 
