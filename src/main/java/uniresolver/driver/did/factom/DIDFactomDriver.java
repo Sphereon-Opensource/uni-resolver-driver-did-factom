@@ -23,35 +23,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DIDFactomDriver implements Driver {
-
+    private final Pattern DID_FACTOM_PATTERN = Pattern.compile("^did:factom:.+");
     private static Logger log = LoggerFactory.getLogger(DIDFactomDriver.class);
     private IdentityClient identityClient;
 
-    private IdentityClient getClient() {
-        if (identityClient == null) {
-            this.identityClient = new IdentityClient.Builder().mode(IdentityClient.Mode.OFFLINE_SIGNING).properties((Map) properties()).build();
-        }
-        return identityClient;
-    }
-
-
-
-    private final Pattern DID_FACTOM_PATTERN = Pattern.compile("^did:factom:.+");
-
 
     public DIDFactomDriver() {
-        this.getPropertiesFromEnvironment();
-    }
-
-
-    private void getPropertiesFromEnvironment() {
-        if (log.isDebugEnabled()) log.debug("Loading from environment: " + System.getenv());
-        try {
-//			this.setWorkDomain(System.getenv("uniresolver_driver_did_factom_factomd_rpc"));
-
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage(), e);
-        }
     }
 
 
@@ -119,6 +96,13 @@ public class DIDFactomDriver implements Driver {
     private String getEnvVar(String envKey, String defaultValue) {
         String value = System.getenv(envKey);
         return StringUtils.isNotEmpty(value) ? value : defaultValue;
+    }
+
+    private IdentityClient getClient() {
+        if (identityClient == null) {
+            this.identityClient = new IdentityClient.Builder().mode(IdentityClient.Mode.OFFLINE_SIGNING).properties((Map) properties()).build();
+        }
+        return identityClient;
     }
 
 
