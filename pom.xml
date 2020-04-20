@@ -136,11 +136,11 @@
             <version>4.4.10</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>org.factomprotocol.identity</groupId>
-            <artifactId>factom-did-models-java-gson</artifactId>
-            <version>0.3.0-SNAPSHOT</version>
-        </dependency>
+        <!-- <dependency>
+             <groupId>org.factomprotocol.identity</groupId>
+             <artifactId>factom-did-models-java-gson</artifactId>
+             <version>0.3.0-SNAPSHOT</version>
+         </dependency>-->
         <dependency>
             <groupId>org.factomprotocol.identity</groupId>
             <artifactId>factom-identity-client</artifactId>
@@ -176,5 +176,45 @@
             <url>http://nexus.qa.sphereon.com/repository/sphereon-opensource-releases/</url>
         </repository>
     </distributionManagement>
+
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+        <repository>
+            <id>sphereon-opensource-releases</id>
+            <name>Sphereon Opensource Releases</name>
+            <url>http://nexus.qa.sphereon.com/repository/sphereon-opensource-releases/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>sphereon-opensource-snapshots</id>
+            <name>Sphereon Opensource Snapshots</name>
+            <url>http://nexus.qa.sphereon.com/repository/sphereon-opensource-snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>github-universal-resolver</id>
+            <name>GitHub decentralized-identity/universal-resolver</name>
+            <url>https://maven.pkg.github.com/decentralized-identity/universal-resolver</url>
+        </repository>
+        <repository>
+            <id>github-did-common-java</id>
+            <name>GitHub decentralized-identity/did-common-java</name>
+            <url>https://maven.pkg.github.com/decentralized-identity/did-common-java</url>
+        </repository>
+    </repositories>
 
 </project>

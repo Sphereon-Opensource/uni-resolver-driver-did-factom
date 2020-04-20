@@ -6,17 +6,23 @@ MAINTAINER Sphereon <dev@sphereon.com>
 ARG GITHUB_READ_PACKAGES_OWNER
 ARG GITHUB_READ_PACKAGES_TOKEN
 
+# Default mainnet node using Factom OpenNode
+ENV NODE1_ENABLED true
+ENV NODE1_NETWORK_ID mainnet
+ENV NODE1_FACTOMD_URL https://api.factomd.net/v2
 
-# Driver arguments
-ARG TESTNET_FACTOMD_URL=https://dev.factomd.net/v2
-ARG MAINNET_FACTOMD_URL=https://api.factomd.net/v2
-ARG CUSTOM_FACTOMD_URL=https://dev.factomd.net/v2
+# Default testnet node using Factom OpenNode
+ENV NODE2_ENABLED true
+ENV NODE2_NETWORK_ID testnet
+ENV NODE2_FACTOMD_URL https://dev.factomd.net/v2
+#
+# Additional nodes can be passed in using environment variables
 
 # done
 
 ADD ./settings.xml /root/.m2/
 ADD . /opt/driver-did-factom
-RUN cd /opt/driver-did-factom && echo "Factomd URL: $TESTNET_FACTOMD_URL" && mvn --settings settings.xml clean install package -N -DskipTests
+RUN cd /opt/driver-did-factom && mvn --settings settings.xml clean install package -N -DskipTests
 
 EXPOSE 8080
 
