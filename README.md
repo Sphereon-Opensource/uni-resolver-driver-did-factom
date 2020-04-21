@@ -81,9 +81,3 @@ Make sure to have 3 secrets available in Github:
  * DOCKER_USERNAME - The Dockerhub username to push images
  * DOCKER_PASSWORD - The Dockerhub password to push images
  * MAVEN_SETTINGS - The base64 encoded maven settings.xml from this repo, with the GITHUB_READ_PACKAGES variables replaced by your username and personal accesstoken
-
-## Driver Environment Variables
-
-`uniresolver_driver_did_work_apikey` an API Key to allow throttling
-`uniresolver_driver_did_work_domain` the URI to call into the Workday Credentials platform
-
