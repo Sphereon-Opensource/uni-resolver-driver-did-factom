@@ -22,8 +22,16 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static uniresolver.driver.did.factom.Constants.DID_FACTOM_METHOD_PATTERN;
+import static uniresolver.driver.did.factom.Constants.FACTOMD_URL_KEY;
+import static uniresolver.driver.did.factom.Constants.FACTOMD_URL_MAINNET;
+import static uniresolver.driver.did.factom.Constants.FACTOMD_URL_TESTNET;
+import static uniresolver.driver.did.factom.Constants.MAINNET_KEY;
+import static uniresolver.driver.did.factom.Constants.TESTNET_KEY;
+
 public class DIDFactomDriver implements Driver {
-    private final Pattern DID_FACTOM_PATTERN = Pattern.compile("^did:factom:.+");
+
+    private final Pattern DID_FACTOM_PATTERN = Pattern.compile(DID_FACTOM_METHOD_PATTERN);
     private static Logger log = LoggerFactory.getLogger(DIDFactomDriver.class);
 
 
@@ -32,8 +40,8 @@ public class DIDFactomDriver implements Driver {
         List<IdentityClient> clients = clientFactory.fromEnvironment((Map) properties());
         if (clients.isEmpty()) {
             log.warn("No Factom networks defined in environment. Using default mainnet and testnet values using OpenNode");
-            clients.add(new IdentityClient.Builder().id("mainnet").mode(IdentityClient.Mode.OFFLINE_SIGNING).property("factomd.url", "https://api.factomd.net/v2").build());
-            clients.add(new IdentityClient.Builder().id("testnet").mode(IdentityClient.Mode.OFFLINE_SIGNING).property("factomd.url", "https://dev.factomd.net/v2").build());
+            clients.add(new IdentityClient.Builder().id(MAINNET_KEY).mode(IdentityClient.Mode.OFFLINE_SIGNING).property(FACTOMD_URL_KEY, FACTOMD_URL_MAINNET).build());
+            clients.add(new IdentityClient.Builder().id(TESTNET_KEY).mode(IdentityClient.Mode.OFFLINE_SIGNING).property(FACTOMD_URL_KEY, FACTOMD_URL_TESTNET).build());
         }
         clients.forEach(client -> IdentityClient.Registry.put(client));
     }
@@ -51,9 +59,10 @@ public class DIDFactomDriver implements Driver {
         }
         String targetIdentifier = identifier;
         DIDURL didurl = DIDURL.fromString(identifier);
-        Optional<String> networkId = Optional.of("mainnet");
+        Optional<String> networkId = Optional.of(MAINNET_KEY);
 
         String[] parts = didurl.getDidUrlString().split(":");
+        // In case we have a network Id, split it up
         if (parts.length > 3 && parts[3].length() == 64) {
             networkId = Optional.ofNullable(parts[2].toLowerCase());
             targetIdentifier = identifier.replaceFirst("\\:" + networkId.get(), "");
@@ -75,7 +84,7 @@ public class DIDFactomDriver implements Driver {
     private Map<String, Object> createMethodMetadata(String identifier, Optional<String> networkId, IdentityResponse identityResponse, DIDDocument didDocument, Instant start) {
         Map<String, Object> methodMetadata = new HashMap<>();
 
-        methodMetadata.put("network", networkId.orElse("mainnet"));
+        methodMetadata.put("network", networkId.orElse(MAINNET_KEY));
         methodMetadata.put("factomdNode", ((AbstractClient) getClient(networkId).lowLevelClient().getEntryApi().getFactomdClient()).getSettings().getServer().getURL());
         methodMetadata.put("chainCreationEntryHash", identityResponse.getMetadata().getCreation().getEntryHash());
         methodMetadata.put("chainCreationEntryTimestamp", identityResponse.getMetadata().getCreation().getEntryTimestamp());
@@ -97,7 +106,7 @@ public class DIDFactomDriver implements Driver {
         resolverMetadata.put("duration", Duration.between(start, Instant.now()).toMillis());
         resolverMetadata.put("method", "factom");
         resolverMetadata.put("didUrl", DIDURL.fromString(identifier).toJsonObject());
-        resolverMetadata.put("driverId", "Sphereon-OpenSource/uniresolver-driver-did-factom");
+        resolverMetadata.put("driverId", "Sphereon/driver-did-factom");
         resolverMetadata.put("vendor", "Factom Protocol"/*getClass().getPackage().getImplementationVendor()*/);
         resolverMetadata.put("version", "0.2.0-SNAPSHOT"/* getClass().getPackage().getImplementationVersion()*/);
         return resolverMetadata;

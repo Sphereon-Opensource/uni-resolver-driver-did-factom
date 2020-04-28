@@ -15,6 +15,9 @@ import static uniresolver.driver.did.factom.ClientFactory.Env.MODE;
 import static uniresolver.driver.did.factom.ClientFactory.Env.NETWORK_ID;
 import static uniresolver.driver.did.factom.ClientFactory.Env.FACTOMD_URL;
 import static uniresolver.driver.did.factom.ClientFactory.Env.WALLETD_URL;
+import static uniresolver.driver.did.factom.Constants.FACTOMD_URL_KEY;
+import static uniresolver.driver.did.factom.Constants.MAINNET_KEY;
+import static uniresolver.driver.did.factom.Constants.WALLETD_URL_KEY;
 
 public class ClientFactory {
     public enum Env {
@@ -61,17 +64,17 @@ public class ClientFactory {
         String walletdUrl = environment.get(WALLETD_URL.key(nr));
         String id = environment.get(NETWORK_ID.key(nr));
         if (StringUtils.isEmpty(id)) {
-            id = "mainnet";
+            id = MAINNET_KEY;
         }
         String mode = environment.get(MODE.key(nr));
 
         IdentityClient.Builder builder = new IdentityClient.Builder()
                 .id(id)
-                .property("factomd.url", factomdUrl)
+                .property(FACTOMD_URL_KEY, factomdUrl)
                 .mode(StringUtils.isEmpty(mode) ? IdentityClient.Mode.OFFLINE_SIGNING : IdentityClient.Mode.valueOf(mode.toUpperCase()));
 
         if (StringUtils.isNotEmpty(walletdUrl)) {
-            builder.property("walletd.url", walletdUrl);
+            builder.property(WALLETD_URL_KEY, walletdUrl);
         }
         return Optional.of(builder.build());
     }
