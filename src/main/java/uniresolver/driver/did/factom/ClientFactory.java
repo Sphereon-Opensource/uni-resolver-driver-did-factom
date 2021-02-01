@@ -1,7 +1,9 @@
 package uniresolver.driver.did.factom;
 
+import com.sphereon.factom.identity.did.IdentityClient;
+import org.blockchain_innovation.factom.client.api.SigningMode;
 import org.blockchain_innovation.factom.client.api.ops.StringUtils;
-import org.blockchain_innovation.factom.identiy.did.IdentityClient;
+import org.blockchain_innovation.factom.client.api.settings.RpcSettings;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,13 +13,11 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static uniresolver.driver.did.factom.ClientFactory.Env.ENABLED;
+import static uniresolver.driver.did.factom.ClientFactory.Env.FACTOMD_URL;
 import static uniresolver.driver.did.factom.ClientFactory.Env.MODE;
 import static uniresolver.driver.did.factom.ClientFactory.Env.NETWORK_ID;
-import static uniresolver.driver.did.factom.ClientFactory.Env.FACTOMD_URL;
 import static uniresolver.driver.did.factom.ClientFactory.Env.WALLETD_URL;
-import static uniresolver.driver.did.factom.Constants.FACTOMD_URL_KEY;
 import static uniresolver.driver.did.factom.Constants.MAINNET_KEY;
-import static uniresolver.driver.did.factom.Constants.WALLETD_URL_KEY;
 
 public class ClientFactory {
     public enum Env {
@@ -69,12 +69,14 @@ public class ClientFactory {
         String mode = environment.get(MODE.key(nr));
 
         IdentityClient.Builder builder = new IdentityClient.Builder()
-                .id(id)
-                .property(FACTOMD_URL_KEY, factomdUrl)
-                .mode(StringUtils.isEmpty(mode) ? IdentityClient.Mode.OFFLINE_SIGNING : IdentityClient.Mode.valueOf(mode.toUpperCase()));
+                .networkName(id)
+                .property(constructPropertyKey(id, RpcSettings.SubSystem.FACTOMD, Constants.URL_KEY), factomdUrl)
+                .property(constructPropertyKey(id, RpcSettings.SubSystem.WALLETD, Constants.SIGNING_MODE_KEY),
+                        StringUtils.isEmpty(mode) ? SigningMode.OFFLINE.toString() : SigningMode.fromModeString(mode).toString()
+                );
 
         if (StringUtils.isNotEmpty(walletdUrl)) {
-            builder.property(WALLETD_URL_KEY, walletdUrl);
+            builder.property(constructPropertyKey(id, RpcSettings.SubSystem.WALLETD, Constants.URL_KEY), walletdUrl);
         }
         return Optional.of(builder.build());
     }
@@ -85,4 +87,7 @@ public class ClientFactory {
         return map;
     }
 
+    private String constructPropertyKey(String networkId, RpcSettings.SubSystem subsystem, String key) {
+        return String.format("%s.%s.%s", networkId, subsystem.configKey(), key);
+    }
 }
