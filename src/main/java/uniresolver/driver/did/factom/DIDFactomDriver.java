@@ -95,7 +95,7 @@ public class DIDFactomDriver implements Driver {
         try {
             IdentityClient client = getClient(networkId);
             List<FactomIdentityEntry<?>> allEntries = client.lowLevelClient()
-                    .getAllEntriesByIdentifier(identifier, EntryValidation.THROW_ERROR, Optional.empty(), Optional.empty());
+                    .getAllEntriesByIdentifier(identifier, EntryValidation.IGNORE_ERROR, Optional.empty(), Optional.empty());
             BlockchainResponse<?> blockchainResponse = client.factory().toBlockchainResponse(identifier, allEntries);
             DIDDocument didDocument = client.factory().toDid(identifier, blockchainResponse);
             return ResolveResult
