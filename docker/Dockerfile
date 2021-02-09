@@ -1,10 +1,7 @@
 # Dockerfile for universalresolver/driver-did-factom
 
-FROM universalresolver/base-ubuntu
+FROM maven:3.6.3-jdk-11
 MAINTAINER Sphereon <dev@sphereon.com>
-
-ARG GITHUB_READ_PACKAGES_OWNER
-ARG GITHUB_READ_PACKAGES_TOKEN
 
 # Default mainnet node using Factom OpenNode
 ENV NODE1_ENABLED true
@@ -20,9 +17,8 @@ ENV NODE2_FACTOMD_URL https://dev.factomd.net/v2
 
 # done
 
-ADD ./settings.xml /root/.m2/
 ADD . /opt/driver-did-factom
-RUN cd /opt/driver-did-factom && mvn --settings settings.xml clean install package -N -DskipTests
+RUN cd /opt/driver-did-factom && mvn clean install package -N -DskipTests
 
 EXPOSE 8080
 

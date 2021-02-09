@@ -202,14 +202,8 @@
             </releases>
         </repository>
         <repository>
-            <id>github-universal-resolver</id>
-            <name>GitHub decentralized-identity/universal-resolver</name>
-            <url>https://maven.pkg.github.com/decentralized-identity/universal-resolver</url>
-        </repository>
-        <repository>
-            <id>github-did-common-java</id>
-            <name>GitHub decentralized-identity/did-common-java</name>
-            <url>https://maven.pkg.github.com/decentralized-identity/did-common-java</url>
+            <id>danubetech-maven-public</id>
+            <url>https://repo.danubetech.com/repository/maven-public/</url>
         </repository>
     </repositories>
 
