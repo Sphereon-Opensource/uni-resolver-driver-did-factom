@@ -1,4 +1,4 @@
-package uniresolver.driver.did.factom;
+package com.sphereon.uniresolver.driver.did.factom;
 
 public interface Constants {
     String DID_FACTOM_METHOD_PATTERN = "^did:factom:.+";

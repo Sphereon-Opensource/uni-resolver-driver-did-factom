@@ -1,5 +1,6 @@
-package uniresolver.driver.did.factom;
+package com.sphereon.uniresolver.driver.did.factom;
 
+import com.sphereon.factom.identity.did.DIDRuntimeException;
 import com.sphereon.factom.identity.did.IdentityClient;
 import com.sphereon.factom.identity.did.entry.EntryValidation;
 import com.sphereon.factom.identity.did.entry.FactomIdentityEntry;
@@ -12,15 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.blockchain_innovation.factom.client.api.SigningMode;
 import org.blockchain_innovation.factom.client.api.settings.RpcSettings;
 import org.blockchain_innovation.factom.client.impl.AbstractClient;
-import org.factomprotocol.identity.did.model.IdentityResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import uniresolver.ResolutionException;
 import uniresolver.driver.Driver;
 import uniresolver.result.ResolveResult;
 
-import javax.swing.text.html.Option;
-import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -30,38 +27,26 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static uniresolver.driver.did.factom.Constants.DID_FACTOM_METHOD_PATTERN;
-import static uniresolver.driver.did.factom.Constants.FACTOMD_URL_MAINNET;
-import static uniresolver.driver.did.factom.Constants.FACTOMD_URL_TESTNET;
-import static uniresolver.driver.did.factom.Constants.MAINNET_KEY;
-import static uniresolver.driver.did.factom.Constants.SIGNING_MODE_KEY;
-import static uniresolver.driver.did.factom.Constants.TESTNET_KEY;
-import static uniresolver.driver.did.factom.Constants.URL_KEY;
+import static com.sphereon.uniresolver.driver.did.factom.Constants.DID_FACTOM_METHOD_PATTERN;
+import static com.sphereon.uniresolver.driver.did.factom.Constants.FACTOMD_URL_MAINNET;
+import static com.sphereon.uniresolver.driver.did.factom.Constants.FACTOMD_URL_TESTNET;
+import static com.sphereon.uniresolver.driver.did.factom.Constants.MAINNET_KEY;
+import static com.sphereon.uniresolver.driver.did.factom.Constants.SIGNING_MODE_KEY;
+import static com.sphereon.uniresolver.driver.did.factom.Constants.TESTNET_KEY;
+import static com.sphereon.uniresolver.driver.did.factom.Constants.URL_KEY;
 
 @Slf4j
+@Service
 public class DIDFactomDriver implements Driver {
 
     private final Pattern DID_FACTOM_PATTERN = Pattern.compile(DID_FACTOM_METHOD_PATTERN);
-
 
 
     public DIDFactomDriver() {
         ClientFactory clientFactory = new ClientFactory();
         List<IdentityClient> clients = clientFactory.fromEnvironment((Map) properties());
         if (clients.isEmpty()) {
-            log.warn("No Factom networks defined in environment. Using default mainnet and testnet values using Factom OpenNode API");
-            clients.add(new IdentityClient.Builder().networkName(MAINNET_KEY)
-                    .property(constructPropertyKey(MAINNET_KEY, RpcSettings.SubSystem.FACTOMD, URL_KEY),
-                            FACTOMD_URL_MAINNET)
-                    .property(constructPropertyKey(MAINNET_KEY, RpcSettings.SubSystem.WALLETD, SIGNING_MODE_KEY),
-                            SigningMode.OFFLINE.toString().toLowerCase())
-                    .build());
-            clients.add(new IdentityClient.Builder().networkName(TESTNET_KEY)
-                    .property(constructPropertyKey(TESTNET_KEY, RpcSettings.SubSystem.FACTOMD, URL_KEY),
-                            FACTOMD_URL_TESTNET)
-                    .property(constructPropertyKey(TESTNET_KEY, RpcSettings.SubSystem.WALLETD, SIGNING_MODE_KEY),
-                            SigningMode.OFFLINE.toString().toLowerCase())
-                    .build());
+            addDefaultClient(clients);
         }
         clients.forEach(IdentityClient.Registry::put);
     }
@@ -70,7 +55,9 @@ public class DIDFactomDriver implements Driver {
     @Override
     public ResolveResult resolve(String identifier) throws ResolutionException {
         Instant start = Instant.now();
-        if (log.isDebugEnabled()) log.debug("Resolving identifier " + identifier);
+        if (log.isDebugEnabled()) {
+            log.debug("Resolving identifier " + identifier);
+        }
 
         // match
         Matcher matcher = DID_FACTOM_PATTERN.matcher(identifier);
@@ -100,6 +87,12 @@ public class DIDFactomDriver implements Driver {
             IdentityClient client = getClient(networkId);
             List<FactomIdentityEntry<?>> allEntries = client.lowLevelClient()
                     .getAllEntriesByIdentifier(identifier, EntryValidation.IGNORE_ERROR, Optional.empty(), Optional.empty());
+            if (allEntries == null) {
+                throw new DIDRuntimeException.NotFoundException(String.format("'%s' not found on network %s", identifier, networkId.get()));
+            } else
+            if (allEntries.isEmpty()) {
+                throw new DIDRuntimeException.NotFoundException(String.format("'%s' is pending on %s", identifier, networkId.get()));
+            }
             BlockchainResponse<?> blockchainResponse = client.factory().toBlockchainResponse(identifier, allEntries);
             DIDDocument didDocument = client.factory().toDid(identifier, blockchainResponse);
             return ResolveResult
@@ -161,4 +154,20 @@ public class DIDFactomDriver implements Driver {
         return String.format("%s.%s.%s", networkId, subsystem.configKey(), key);
     }
 
+
+    private void addDefaultClient(List<IdentityClient> clients) {
+        log.warn("No Factom networks defined in environment. Using default mainnet and testnet values using Factom OpenNode API");
+        clients.add(new IdentityClient.Builder().networkName(MAINNET_KEY)
+                .property(constructPropertyKey(MAINNET_KEY, RpcSettings.SubSystem.FACTOMD, URL_KEY),
+                        FACTOMD_URL_MAINNET)
+                .property(constructPropertyKey(MAINNET_KEY, RpcSettings.SubSystem.WALLETD, SIGNING_MODE_KEY),
+                        SigningMode.OFFLINE.toString().toLowerCase())
+                .build());
+        clients.add(new IdentityClient.Builder().networkName(TESTNET_KEY)
+                .property(constructPropertyKey(TESTNET_KEY, RpcSettings.SubSystem.FACTOMD, URL_KEY),
+                        FACTOMD_URL_TESTNET)
+                .property(constructPropertyKey(TESTNET_KEY, RpcSettings.SubSystem.WALLETD, SIGNING_MODE_KEY),
+                        SigningMode.OFFLINE.toString().toLowerCase())
+                .build());
+    }
 }

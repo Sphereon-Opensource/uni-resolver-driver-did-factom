@@ -1,4 +1,4 @@
-package uniresolver.driver.did.factom;
+package com.sphereon.uniresolver.driver.did.factom;
 
 import com.sphereon.factom.identity.did.IdentityClient;
 import org.blockchain_innovation.factom.client.api.SigningMode;
@@ -12,12 +12,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-import static uniresolver.driver.did.factom.ClientFactory.Env.ENABLED;
-import static uniresolver.driver.did.factom.ClientFactory.Env.FACTOMD_URL;
-import static uniresolver.driver.did.factom.ClientFactory.Env.MODE;
-import static uniresolver.driver.did.factom.ClientFactory.Env.NETWORK_ID;
-import static uniresolver.driver.did.factom.ClientFactory.Env.WALLETD_URL;
-import static uniresolver.driver.did.factom.Constants.MAINNET_KEY;
+import static com.sphereon.uniresolver.driver.did.factom.ClientFactory.Env.ENABLED;
+import static com.sphereon.uniresolver.driver.did.factom.ClientFactory.Env.FACTOMD_URL;
+import static com.sphereon.uniresolver.driver.did.factom.ClientFactory.Env.MODE;
+import static com.sphereon.uniresolver.driver.did.factom.ClientFactory.Env.NETWORK_ID;
+import static com.sphereon.uniresolver.driver.did.factom.ClientFactory.Env.WALLETD_URL;
+import static com.sphereon.uniresolver.driver.did.factom.Constants.MAINNET_KEY;
 
 public class ClientFactory {
     public enum Env {

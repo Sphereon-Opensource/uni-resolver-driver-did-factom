@@ -3,9 +3,9 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>uni-resolver-driver-did-factom</artifactId>
-    <packaging>${packaging.type}</packaging>
     <name>uni-resolver-driver-did-factom</name>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <parent>
         <groupId>decentralized-identity</groupId>
@@ -13,176 +13,241 @@
         <version>0.3.1</version>
     </parent>
 
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <factom-client.version>0.4.1</factom-client.version>
+        <factom-did-models-java-gson.version>0.3.1</factom-did-models-java-gson.version>
+        <factom-identity-client.version>0.4.0-SNAPSHOT</factom-identity-client.version>
+        <spring-core.version>5.3.9</spring-core.version>
+        <spring-boot.version>2.5.3</spring-boot.version>
+    </properties>
+
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>5.3.9</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>decentralized-identity</groupId>
+                <artifactId>did-common-java</artifactId>
+                <version>0.3.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                            <!--							<addBuildEnvironmentEntries>true</addBuildEnvironmentEntries>-->
-                        </manifest>
-                    </archive>
+                    <mainClass>com.sphereon.uniregistrar.driver.did.factom.FactomDriverApplication</mainClass>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <release>11</release>
-                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
 
-    <profiles>
+    <!-- <profiles>
 
-        <profile>
+         <profile>
 
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <packaging.type>jar</packaging.type>
-            </properties>
+             <id>default</id>
+             <activation>
+                 <activeByDefault>true</activeByDefault>
+             </activation>
+             <properties>
+                 <packaging.type>jar</packaging.type>
+             </properties>
 
-        </profile>
+         </profile>
 
-        <profile>
+         <profile>
 
-            <id>war</id>
-            <properties>
-                <packaging.type>war</packaging.type>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-war-plugin</artifactId>
-                        <version>3.3.1</version>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.eclipse.jetty</groupId>
-                        <artifactId>jetty-maven-plugin</artifactId>
-                        <version>11.0.6</version>
-                        <configuration>
-                            <jettyConfig>
-                                ${basedir}/src/test/resources/jetty.xml
-                            </jettyConfig>
-                            <useTestClasspath>true</useTestClasspath>
-                            <systemProperties>
-                                <systemProperty>
-                                    <name>jetty.port</name>
-                                    <value>8080</value>
-                                </systemProperty>
-                                <systemProperty>
-                                    <name>slf4j</name>
-                                    <value>true</value>
-                                </systemProperty>
-                                <systemProperty>
-                                    <name>log4j.configuration</name>
-                                    <value>file:${basedir}/src/test/resources/log4j.properties</value>
-                                </systemProperty>
-                            </systemProperties>
-                            <webApp>
-                                <webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
-                                <containerIncludeJarPattern>^$</containerIncludeJarPattern>
-                            </webApp>
-                        </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.slf4j</groupId>
-                                <artifactId>slf4j-api</artifactId>
-                                <version>1.7.30</version>
-                                <scope>compile</scope>
-                            </dependency>
-                            <dependency>
-                                <groupId>org.slf4j</groupId>
-                                <artifactId>slf4j-api</artifactId>
-                                <version>1.7.30</version>
-                                <scope>compile</scope>
-                            </dependency>
-                            <dependency>
-                                <groupId>org.slf4j</groupId>
-                                <artifactId>jcl-over-slf4j</artifactId>
-                                <version>1.7.30</version>
-                                <scope>compile</scope>
-                            </dependency>
-                            <dependency>
-                                <groupId>org.slf4j</groupId>
-                                <artifactId>slf4j-log4j12</artifactId>
-                                <version>1.7.30</version>
-                                <scope>compile</scope>
-                            </dependency>
-                        </dependencies>
-                    </plugin>
-                </plugins>
-            </build>
+             <id>war</id>
+             <properties>
+                 <packaging.type>war</packaging.type>
+             </properties>
+             <build>
+                 <plugins>
+                     <plugin>
+                         <groupId>org.apache.maven.plugins</groupId>
+                         <artifactId>maven-war-plugin</artifactId>
+                         <version>3.3.1</version>
+                     </plugin>
+                     <plugin>
+                         <groupId>org.eclipse.jetty</groupId>
+                         <artifactId>jetty-maven-plugin</artifactId>
+                         <version>11.0.6</version>
+                         <configuration>
+                             <jettyConfig>
+                                 ${basedir}/src/test/resources/jetty.xml
+                             </jettyConfig>
+                             <useTestClasspath>true</useTestClasspath>
+                             <systemProperties>
+                                 <systemProperty>
+                                     <name>jetty.port</name>
+                                     <value>8080</value>
+                                 </systemProperty>
+                                 <systemProperty>
+                                     <name>slf4j</name>
+                                     <value>true</value>
+                                 </systemProperty>
+                                 <systemProperty>
+                                     <name>log4j.configuration</name>
+                                     <value>file:${basedir}/src/test/resources/log4j.properties</value>
+                                 </systemProperty>
+                             </systemProperties>
+                             <webApp>
+                                 <webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
+                                 <containerIncludeJarPattern>^$</containerIncludeJarPattern>
+                             </webApp>
+                         </configuration>
+                         <dependencies>
+                             <dependency>
+                                 <groupId>org.slf4j</groupId>
+                                 <artifactId>slf4j-api</artifactId>
+                                 <version>1.7.30</version>
+                                 <scope>compile</scope>
+                             </dependency>
+                             <dependency>
+                                 <groupId>org.slf4j</groupId>
+                                 <artifactId>slf4j-api</artifactId>
+                                 <version>1.7.30</version>
+                                 <scope>compile</scope>
+                             </dependency>
+                             <dependency>
+                                 <groupId>org.slf4j</groupId>
+                                 <artifactId>jcl-over-slf4j</artifactId>
+                                 <version>1.7.30</version>
+                                 <scope>compile</scope>
+                             </dependency>
+                             <dependency>
+                                 <groupId>org.slf4j</groupId>
+                                 <artifactId>slf4j-log4j12</artifactId>
+                                 <version>1.7.30</version>
+                                 <scope>compile</scope>
+                             </dependency>
+                         </dependencies>
+                     </plugin>
+                 </plugins>
+             </build>
 
-        </profile>
+         </profile>
 
-    </profiles>
+     </profiles>-->
 
     <dependencies>
         <dependency>
-            <groupId>decentralized-identity</groupId>
-            <artifactId>uni-resolver-driver</artifactId>
-            <version>0.3.1</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20210307</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
-            <version>4.4.14</version>
-            <scope>compile</scope>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring-core.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.factomprotocol.identity</groupId>
-            <artifactId>factom-did-models-java-gson</artifactId>
-            <version>0.3.0</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring-core.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sphereon.public</groupId>
             <artifactId>factom-identity-client</artifactId>
-            <version>0.4.0-SNAPSHOT</version>
+            <version>${factom-identity-client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.factomprotocol.identity</groupId>
+            <artifactId>factom-did-models-java-gson</artifactId>
+            <version>${factom-did-models-java-gson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.blockchain-innovation.factom.client</groupId>
             <artifactId>json-converter-gson</artifactId>
-            <version>0.4.0</version>
+            <version>${factom-client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.blockchain-innovation.factom.client</groupId>
+            <artifactId>factom-client-offline-signing</artifactId>
+            <version>${factom-client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.blockchain-innovation.factom.client</groupId>
+            <artifactId>factom-client-impl</artifactId>
+            <version>${factom-client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.blockchain-innovation.factom.client</groupId>
             <artifactId>logger-slf4j</artifactId>
-            <version>0.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.13</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
+            <version>${factom-client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.20</version>
+        </dependency>
+        <dependency>
+            <groupId>decentralized-identity</groupId>
+            <artifactId>did-common-java</artifactId>
+            <version>0.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>decentralized-identity</groupId>
+            <artifactId>uni-resolver-driver</artifactId>
+            <version>0.3.1</version>
+        </dependency>
+
+        <!--        compile group: 'com.github.multiformats', name: 'java-multibase', version: 'v1.0.0'-->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20210307</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-oas</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-boot-starter</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
