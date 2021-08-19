@@ -8,6 +8,7 @@ import com.sphereon.factom.identity.did.response.BlockchainResponse;
 import foundation.identity.did.DIDDocument;
 import foundation.identity.did.DIDURL;
 import foundation.identity.did.parser.ParserException;
+import lombok.extern.slf4j.Slf4j;
 import org.blockchain_innovation.factom.client.api.SigningMode;
 import org.blockchain_innovation.factom.client.api.settings.RpcSettings;
 import org.blockchain_innovation.factom.client.impl.AbstractClient;
@@ -37,17 +38,18 @@ import static uniresolver.driver.did.factom.Constants.SIGNING_MODE_KEY;
 import static uniresolver.driver.did.factom.Constants.TESTNET_KEY;
 import static uniresolver.driver.did.factom.Constants.URL_KEY;
 
+@Slf4j
 public class DIDFactomDriver implements Driver {
 
     private final Pattern DID_FACTOM_PATTERN = Pattern.compile(DID_FACTOM_METHOD_PATTERN);
-    private static Logger log = LoggerFactory.getLogger(DIDFactomDriver.class);
+
 
 
     public DIDFactomDriver() {
         ClientFactory clientFactory = new ClientFactory();
         List<IdentityClient> clients = clientFactory.fromEnvironment((Map) properties());
         if (clients.isEmpty()) {
-            log.warn("No Factom networks defined in environment. Using default mainnet and testnet values using OpenNode");
+            log.warn("No Factom networks defined in environment. Using default mainnet and testnet values using Factom OpenNode API");
             clients.add(new IdentityClient.Builder().networkName(MAINNET_KEY)
                     .property(constructPropertyKey(MAINNET_KEY, RpcSettings.SubSystem.FACTOMD, URL_KEY),
                             FACTOMD_URL_MAINNET)
@@ -80,7 +82,9 @@ public class DIDFactomDriver implements Driver {
         try {
             didurl = DIDURL.fromString(identifier);
         } catch (ParserException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
+            throw new ResolutionException(e);
+            // TODO: 19/08/2021 Log throw antipattern. Waiting for move towards Spring boot and ControllerAdvice
         }
         Optional<String> networkId = Optional.of(MAINNET_KEY);
 
@@ -102,7 +106,7 @@ public class DIDFactomDriver implements Driver {
                     .build(didDocument,
                             createMethodMetadata(identifier, networkId, blockchainResponse, didDocument, start),
                             createResolverMetadata(identifier, blockchainResponse, didDocument, start));
-        } catch (RuleException | ParserException | URISyntaxException e) {
+        } catch (RuleException | ParserException e) {
             throw new ResolutionException(e);
         }
     }
@@ -134,7 +138,7 @@ public class DIDFactomDriver implements Driver {
         resolverMetadata.put("didUrl", DIDURL.fromString(identifier).toJsonObject());
         resolverMetadata.put("driverId", "Sphereon/driver-did-factom");
         resolverMetadata.put("vendor", "Factom Protocol"/*getClass().getPackage().getImplementationVendor()*/);
-        resolverMetadata.put("version", "0.2.0-SNAPSHOT"/* getClass().getPackage().getImplementationVersion()*/);
+        resolverMetadata.put("version", "0.4.0"/* getClass().getPackage().getImplementationVersion()*/);
         return resolverMetadata;
     }
 

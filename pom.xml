@@ -10,7 +10,7 @@
     <parent>
         <groupId>decentralized-identity</groupId>
         <artifactId>uni-resolver</artifactId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.3.1</version>
     </parent>
 
 
@@ -19,6 +19,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -27,6 +28,14 @@
                             <!--							<addBuildEnvironmentEntries>true</addBuildEnvironmentEntries>-->
                         </manifest>
                     </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <release>11</release>
                 </configuration>
             </plugin>
         </plugins>
@@ -57,12 +66,12 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-war-plugin</artifactId>
-                        <version>3.2.2</version>
+                        <version>3.3.1</version>
                     </plugin>
                     <plugin>
                         <groupId>org.eclipse.jetty</groupId>
                         <artifactId>jetty-maven-plugin</artifactId>
-                        <version>9.4.18.v20190429</version>
+                        <version>11.0.6</version>
                         <configuration>
                             <jettyConfig>
                                 ${basedir}/src/test/resources/jetty.xml
@@ -91,19 +100,25 @@
                             <dependency>
                                 <groupId>org.slf4j</groupId>
                                 <artifactId>slf4j-api</artifactId>
-                                <version>1.7.25</version>
+                                <version>1.7.30</version>
+                                <scope>compile</scope>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.slf4j</groupId>
+                                <artifactId>slf4j-api</artifactId>
+                                <version>1.7.30</version>
                                 <scope>compile</scope>
                             </dependency>
                             <dependency>
                                 <groupId>org.slf4j</groupId>
                                 <artifactId>jcl-over-slf4j</artifactId>
-                                <version>1.7.25</version>
+                                <version>1.7.30</version>
                                 <scope>compile</scope>
                             </dependency>
                             <dependency>
                                 <groupId>org.slf4j</groupId>
                                 <artifactId>slf4j-log4j12</artifactId>
-                                <version>1.7.25</version>
+                                <version>1.7.30</version>
                                 <scope>compile</scope>
                             </dependency>
                         </dependencies>
@@ -119,44 +134,55 @@
         <dependency>
             <groupId>decentralized-identity</groupId>
             <artifactId>uni-resolver-driver</artifactId>
-            <version>0.1.0</version>
+            <version>0.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20090211</version>
+            <version>20210307</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
-            <version>4.4.10</version>
+            <version>4.4.14</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.factomprotocol.identity</groupId>
             <artifactId>factom-did-models-java-gson</artifactId>
-            <version>0.3.0-SNAPSHOT</version>
+            <version>0.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.sphereon.public</groupId>
             <artifactId>factom-identity-client</artifactId>
-            <version>0.3.0-SNAPSHOT</version>
+            <version>0.4.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.blockchain-innovation.factom.client</groupId>
             <artifactId>json-converter-gson</artifactId>
-            <version>0.3.0-SNAPSHOT</version>
+            <version>0.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.blockchain-innovation.factom.client</groupId>
             <artifactId>logger-slf4j</artifactId>
-            <version>0.3.0-SNAPSHOT</version>
+            <version>0.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.6</version>
+            <version>4.5.13</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.20</version>
         </dependency>
     </dependencies>
 
@@ -164,25 +190,27 @@
         <snapshotRepository>
             <id>sphereon-opensource-snapshots</id>
             <name>Sphereon Opensource Snapshots</name>
-            <url>http://nexus.qa.sphereon.com/repository/sphereon-opensource-snapshots/</url>
+            <url>https://nexus.qa.sphereon.com/repository/sphereon-opensource-snapshots/</url>
         </snapshotRepository>
         <repository>
             <id>sphereon-opensource-releases</id>
             <name>Sphereon Opensource Releases</name>
-            <url>http://nexus.qa.sphereon.com/repository/sphereon-opensource-releases/</url>
+            <url>https://nexus.qa.sphereon.com/repository/sphereon-opensource-releases/</url>
         </repository>
     </distributionManagement>
 
 
     <repositories>
+
         <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
+            <id>danubetech-public</id>
+            <name>DanubeTech Public Maven</name>
+            <url>https://repo.danubetech.com/repository/maven-public/</url>
         </repository>
         <repository>
             <id>sphereon-opensource-releases</id>
             <name>Sphereon Opensource Releases</name>
-            <url>http://nexus.qa.sphereon.com/repository/sphereon-opensource-releases/</url>
+            <url>https://nexus.qa.sphereon.com/repository/sphereon-opensource-releases/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -193,7 +221,7 @@
         <repository>
             <id>sphereon-opensource-snapshots</id>
             <name>Sphereon Opensource Snapshots</name>
-            <url>http://nexus.qa.sphereon.com/repository/sphereon-opensource-snapshots/</url>
+            <url>https://nexus.qa.sphereon.com/repository/sphereon-opensource-snapshots/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -202,14 +230,34 @@
             </releases>
         </repository>
         <repository>
-            <id>github-universal-resolver</id>
-            <name>GitHub decentralized-identity/universal-resolver</name>
-            <url>https://maven.pkg.github.com/decentralized-identity/universal-resolver</url>
+            <id>bif-releases</id>
+            <name>Blockchain Innovation Foundation Releases</name>
+            <url>https://nexus.qa.sphereon.com/repository/bif/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </repository>
         <repository>
-            <id>github-did-common-java</id>
-            <name>GitHub decentralized-identity/did-common-java</name>
-            <url>https://maven.pkg.github.com/decentralized-identity/did-common-java</url>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+        <!--<repository>
+            <id>bif-snapshots</id>
+            <name>Blockchain Innovation Foundation Snapshots</name>
+            <url>https://nexus.qa.sphereon.com/repository/bif-snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>-->
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
         </repository>
     </repositories>
 

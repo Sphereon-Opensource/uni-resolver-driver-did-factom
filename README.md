@@ -63,8 +63,8 @@ Make sure to pass in the following environment variables:
 ## Build and Run (Docker)
 
 ```
-docker build --build-arg GITHUB_READ_PACKAGES_OWNER="<github_username>" --build-arg GITHUB_READ_PACKAGES_TOKEN="<github_token>" -f ./docker/Dockerfile . -t sphereon/driver-did-factom
-docker run -p 8080: 8080 sphereon/driver-did-factom
+docker build -f ./docker/Dockerfile . -t sphereon/driver-did-factom
+docker run -p 8080:8080 sphereon/driver-did-factom
 curl -X GET http://localhost:8080/1.0/identifiers/did:factom:6aa7d4afe4932885b5b6e93accb5f4f6c14bd1827733e05e3324ae392c0b2764
 
 ```
@@ -72,8 +72,6 @@ curl -X GET http://localhost:8080/1.0/identifiers/did:factom:6aa7d4afe4932885b5b
 ## Build (native Java)
 Maven build:
 
-    export GITHUB_READ_PACKAGES_OWNER="<github_username>" 
-    export GITHUB_READ_PACKAGES_TOKEN="<github_token>"
 	mvn --settings settings.xml clean install
  
 ## Build CI/CD (as Github action)
