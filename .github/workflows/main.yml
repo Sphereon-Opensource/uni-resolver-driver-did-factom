@@ -23,4 +23,4 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
       - name: Build and test
-        run: mvn -B package --file pom.xml
+        run: mvn -B clean install test --file pom.xml
