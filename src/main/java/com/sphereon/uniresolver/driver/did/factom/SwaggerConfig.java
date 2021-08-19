@@ -27,7 +27,6 @@ public class SwaggerConfig {
                 .paths(PathSelectors.any())
                 .build()
                 .tags(new Tag("Resolver", "Factom Resolver"))
-
                 .forCodeGeneration(true)
                 .pathMapping("/");
     }

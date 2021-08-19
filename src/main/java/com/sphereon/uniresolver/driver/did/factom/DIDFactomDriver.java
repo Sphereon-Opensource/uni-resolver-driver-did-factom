@@ -129,9 +129,9 @@ public class DIDFactomDriver implements Driver {
         resolverMetadata.put("duration", Duration.between(start, Instant.now()).toMillis());
         resolverMetadata.put("method", "factom");
         resolverMetadata.put("didUrl", DIDURL.fromString(identifier).toJsonObject());
-        resolverMetadata.put("driverId", "Sphereon/driver-did-factom");
-        resolverMetadata.put("vendor", "Factom Protocol"/*getClass().getPackage().getImplementationVendor()*/);
-        resolverMetadata.put("version", "0.4.0"/* getClass().getPackage().getImplementationVersion()*/);
+        resolverMetadata.put("driverId", "sphereon/uni-resolver-driver-did-factom");
+        resolverMetadata.put("vendor", "Factom Protocol");
+        resolverMetadata.put("version", "0.4.0");
         return resolverMetadata;
     }
 

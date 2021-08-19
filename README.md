@@ -20,7 +20,7 @@ A drop in replacement for the universal resolver endpoints is available in the [
 ## Example DIDs
 
 ```
-did:factom:6aa7d4afe4932885b5b6e93accb5f4f6c14bd1827733e05e3324ae392c0b2764
+did:factom:testnet:6aa7d4afe4932885b5b6e93accb5f4f6c14bd1827733e05e3324ae392c0b2764
 
 ```
 ## Running the container and configuration
@@ -60,22 +60,17 @@ Make sure to pass in the following environment variables:
  * GITHUB_READ_PACKAGES_TOKEN="<github_access_token_repo_read>"
 
 
-## Build and Run (Docker)
-
-```
-docker build -f ./docker/Dockerfile . -t sphereon/driver-did-factom
-docker run -p 8080:8080 sphereon/driver-did-factom
-curl -X GET http://localhost:8080/1.0/identifiers/did:factom:6aa7d4afe4932885b5b6e93accb5f4f6c14bd1827733e05e3324ae392c0b2764
-
-```
 
 ## Build (native Java)
 Maven build:
 
-	mvn --settings settings.xml clean install
- 
-## Build CI/CD (as Github action)
-Make sure to have 3 secrets available in Github:
- * DOCKER_USERNAME - The Dockerhub username to push images
- * DOCKER_PASSWORD - The Dockerhub password to push images
- * MAVEN_SETTINGS - The base64 encoded maven settings.xml from this repo, with the GITHUB_READ_PACKAGES variables replaced by your username and personal accesstoken
+	mvn clean install
+
+## Build and Run (Docker)
+
+```
+docker build . -t sphereon/uni-resolver-driver-did-factom
+docker run -p 8080:8080 sphereon/uni-resolver-driver-did-factom
+ curl -X GET http://localhost:8080/1.0/identifiers/did:factom:testnet:6aa7d4afe4932885b5b6e93accb5f4f6c14bd1827733e05e3324ae392c0b2764
+
+```

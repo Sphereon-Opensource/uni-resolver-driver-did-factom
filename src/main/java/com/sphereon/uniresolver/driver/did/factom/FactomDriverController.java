@@ -1,6 +1,7 @@
 package com.sphereon.uniresolver.driver.did.factom;
 
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +19,7 @@ public class FactomDriverController {
     }
 
     @Operation(summary = "Resolve a DID", operationId = "resolveDID", description = "Resolve an existing DID", tags = "Resolver")
-    @PostMapping(value = "/identifiers/{id}")
+    @GetMapping(value = "/identifiers/{id}")
     public ResolveResult create(@PathVariable(name = "id") String id) throws ResolutionException {
         return didFactomDriver.resolve(id);
     }

@@ -1,6 +1,6 @@
 # Dockerfile for universalresolver/driver-did-factom
 
-FROM maven:openjdk
+FROM adoptopenjdk/openjdk11:jre
 MAINTAINER Sphereon <dev@sphereon.com>
 
 # Default mainnet node using Factom OpenNode
@@ -15,13 +15,9 @@ ENV NODE2_FACTOMD_URL https://dev.factomd.net/v2
 #
 # Additional nodes can be passed in using environment variables
 
-# done
-
-#ADD ./settings.xml /root/.m2/
-ADD . /opt/driver-did-factom
-RUN cd /opt/driver-did-factom && mvn clean install package -N -DskipTests
 
 EXPOSE 8080
 
-RUN chmod 555 /opt/driver-did-factom/docker/run-driver-did-factom.sh
-CMD "/opt/driver-did-factom/docker/run-driver-did-factom.sh"
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
