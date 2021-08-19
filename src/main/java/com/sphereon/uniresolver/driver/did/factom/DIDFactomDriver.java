@@ -54,10 +54,8 @@ public class DIDFactomDriver implements Driver {
 
     @Override
     public ResolveResult resolve(String identifier) throws ResolutionException {
+        log.info("Resolving did: {}....", identifier);
         Instant start = Instant.now();
-        if (log.isDebugEnabled()) {
-            log.debug("Resolving identifier " + identifier);
-        }
 
         // match
         Matcher matcher = DID_FACTOM_PATTERN.matcher(identifier);
@@ -95,10 +93,12 @@ public class DIDFactomDriver implements Driver {
             }
             BlockchainResponse<?> blockchainResponse = client.factory().toBlockchainResponse(identifier, allEntries);
             DIDDocument didDocument = client.factory().toDid(identifier, blockchainResponse);
-            return ResolveResult
+            final ResolveResult result = ResolveResult
                     .build(didDocument,
                             createMethodMetadata(identifier, networkId, blockchainResponse, didDocument, start),
                             createResolverMetadata(identifier, blockchainResponse, didDocument, start));
+            log.info("Resolved did: {}", identifier);
+            return result;
         } catch (RuleException | ParserException e) {
             throw new ResolutionException(e);
         }
