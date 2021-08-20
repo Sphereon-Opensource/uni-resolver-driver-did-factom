@@ -21,8 +21,8 @@
         <factom-identity-client.version>0.4.0</factom-identity-client.version>
         <spring-core.version>5.3.9</spring-core.version>
         <spring-boot.version>2.5.3</spring-boot.version>
-        <did-common-java.version>0.3.0</did-common-java.version>
-        <uni-resolver-driver.version>0.3.1</uni-resolver-driver.version>
+        <did-common-java.version>0.3-SNAPSHOT</did-common-java.version>
+        <uni-resolver-driver.version>0.3-SNAPSHOT</uni-resolver-driver.version>
         <springfox.version>3.0.0</springfox.version>
         <lombok.version>1.18.20</lombok.version>
     </properties>
@@ -47,7 +47,12 @@
             <dependency>
                 <groupId>decentralized-identity</groupId>
                 <artifactId>did-common-java</artifactId>
-                <version>0.3.0</version>
+                <version>${did-common-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>decentralized-identity</groupId>
+                <artifactId>uni-resolver-core</artifactId>
+                <version>${did-common-java.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

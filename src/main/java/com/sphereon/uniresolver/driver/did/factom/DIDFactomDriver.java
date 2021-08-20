@@ -6,6 +6,7 @@ import com.sphereon.factom.identity.did.entry.EntryValidation;
 import com.sphereon.factom.identity.did.entry.FactomIdentityEntry;
 import com.sphereon.factom.identity.did.parse.RuleException;
 import com.sphereon.factom.identity.did.response.BlockchainResponse;
+import foundation.identity.did.DID;
 import foundation.identity.did.DIDDocument;
 import foundation.identity.did.DIDURL;
 import foundation.identity.did.parser.ParserException;
@@ -13,9 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.blockchain_innovation.factom.client.api.SigningMode;
 import org.blockchain_innovation.factom.client.api.settings.RpcSettings;
 import org.blockchain_innovation.factom.client.impl.AbstractClient;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import uniresolver.ResolutionException;
 import uniresolver.driver.Driver;
+import uniresolver.result.ResolveDataModelResult;
+import uniresolver.result.ResolveRepresentationResult;
 import uniresolver.result.ResolveResult;
 
 import java.time.Duration;
@@ -53,32 +57,20 @@ public class DIDFactomDriver implements Driver {
 
 
     @Override
-    public ResolveResult resolve(String identifier) throws ResolutionException {
-        log.info("Resolving did: {}....", identifier);
+    public ResolveDataModelResult resolve(DID did, Map<String, Object> resolutionOptions) throws ResolutionException {
+        final var identifier = did.getDidString();
+        log.info("Resolving DID: {}....", identifier);
         Instant start = Instant.now();
-
-        // match
-        Matcher matcher = DID_FACTOM_PATTERN.matcher(identifier);
-        if (!matcher.find()) {
-            return null;
-        }
-        String targetIdentifier = identifier;
-        DIDURL didurl = null;
-        try {
-            didurl = DIDURL.fromString(identifier);
-        } catch (ParserException e) {
-            log.error(e.getMessage(), e);
-            throw new ResolutionException(e);
-            // TODO: 19/08/2021 Log throw antipattern. Waiting for move towards Spring boot and ControllerAdvice
-        }
         Optional<String> networkId = Optional.of(MAINNET_KEY);
 
-        String[] parts = didurl.getDidUrlString().split(":");
+        String[] parts = did.getMethodSpecificId().split(":");
+        var chainId = did.getMethodSpecificId();
         // In case we have a network Id, split it up
-        if (parts.length > 3 && parts[3].length() == 64) {
-            networkId = Optional.ofNullable(parts[2].toLowerCase());
-            targetIdentifier = identifier.replaceFirst("\\:" + networkId.get(), "");
+        if (parts.length > 1 && parts[1].length() == 64) {
+            networkId = Optional.ofNullable(parts[0].toLowerCase());
+            chainId = did.getMethodSpecificId().replaceAll(networkId.get() + "\\:", "");
         }
+        log.info("DID will resolve to network: {}, chain: {}", networkId.get(), chainId);
 
 
         try {
@@ -87,20 +79,24 @@ public class DIDFactomDriver implements Driver {
                     .getAllEntriesByIdentifier(identifier, EntryValidation.IGNORE_ERROR, Optional.empty(), Optional.empty());
             if (allEntries == null) {
                 throw new DIDRuntimeException.NotFoundException(String.format("'%s' not found on network %s", identifier, networkId.get()));
-            } else
-            if (allEntries.isEmpty()) {
+            } else if (allEntries.isEmpty()) {
                 throw new DIDRuntimeException.NotFoundException(String.format("'%s' is pending on %s", identifier, networkId.get()));
             }
             BlockchainResponse<?> blockchainResponse = client.factory().toBlockchainResponse(identifier, allEntries);
             DIDDocument didDocument = client.factory().toDid(identifier, blockchainResponse);
-            final ResolveResult result = ResolveResult
-                    .build(didDocument,
-                            createMethodMetadata(identifier, networkId, blockchainResponse, didDocument, start),
-                            createResolverMetadata(identifier, blockchainResponse, didDocument, start));
-            log.info("Resolved did: {}", identifier);
+            final ResolveDataModelResult result = ResolveDataModelResult
+                    .build(createMethodMetadata(identifier, networkId, blockchainResponse, didDocument, start), didDocument,
+                            createResolverMetadata(identifier, start));
+
+            log.info("Resolved DID: {}, success", identifier);
             return result;
+        } catch (DIDRuntimeException.NotFoundException nfe) {
+            return ResolveRepresentationResult
+                    .makeErrorResult(ResolveResult.ERROR_NOTFOUND, nfe.getMessage(),
+                            createResolverMetadata(identifier, start), MediaType.APPLICATION_JSON_VALUE)
+                    .toResolveDataModelResult();
         } catch (RuleException | ParserException e) {
-            throw new ResolutionException(e);
+            throw new ResolutionException(e.getMessage(), e);
         }
     }
 
@@ -123,12 +119,16 @@ public class DIDFactomDriver implements Driver {
         return methodMetadata;
     }
 
-    private Map<String, Object> createResolverMetadata(String identifier, BlockchainResponse<?> blockchainResponse, DIDDocument didDocument, Instant start) throws ParserException {
+    private Map<String, Object> createResolverMetadata(String identifier, Instant start) {
         Map<String, Object> resolverMetadata = new HashMap<>();
         resolverMetadata.put("startTime", start.toString());
         resolverMetadata.put("duration", Duration.between(start, Instant.now()).toMillis());
         resolverMetadata.put("method", "factom");
-        resolverMetadata.put("didUrl", DIDURL.fromString(identifier).toJsonObject());
+        try {
+            resolverMetadata.put("didUrl", DIDURL.fromString(identifier).toJsonObject());
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+        }
         resolverMetadata.put("driverId", "sphereon/uni-resolver-driver-did-factom");
         resolverMetadata.put("vendor", "Factom Protocol");
         resolverMetadata.put("version", "0.4.0");
