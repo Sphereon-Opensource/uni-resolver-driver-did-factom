@@ -71,6 +71,7 @@ Maven build:
 ```
 docker build . -t sphereon/uni-resolver-driver-did-factom
 docker run -p 8080:8080 sphereon/uni-resolver-driver-did-factom
- curl -X GET http://localhost:8080/1.0/identifiers/did:factom:testnet:6aa7d4afe4932885b5b6e93accb5f4f6c14bd1827733e05e3324ae392c0b2764
+
+curl -X GET http://localhost:8080/1.0/identifiers/did:factom:testnet:6aa7d4afe4932885b5b6e93accb5f4f6c14bd1827733e05e3324ae392c0b2764
 
 ```

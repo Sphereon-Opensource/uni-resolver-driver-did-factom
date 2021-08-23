@@ -8,5 +8,4 @@ public interface Constants {
     String FACTOMD_URL_TESTNET = "https://dev.factomd.net/v2";
     String MAINNET_KEY = "mainnet";
     String TESTNET_KEY = "testnet";
-
 }
