@@ -142,6 +142,13 @@
             <version>${uni-resolver-driver.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.multiformats</groupId>
+            <artifactId>java-multibase</artifactId>
+            <version>v1.0.0</version>
+        </dependency>
+
+
         <!--        compile group: 'com.github.multiformats', name: 'java-multibase', version: 'v1.0.0'-->
         <dependency>
             <groupId>org.json</groupId>
@@ -229,17 +236,6 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-        <!--<repository>
-            <id>bif-snapshots</id>
-            <name>Blockchain Innovation Foundation Snapshots</name>
-            <url>https://nexus.qa.sphereon.com/repository/bif-snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>-->
         <repository>
             <id>central</id>
             <url>https://repo.maven.apache.org/maven2</url>
