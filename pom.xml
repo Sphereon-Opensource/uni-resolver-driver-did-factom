@@ -19,7 +19,7 @@
         <factom-client.version>0.4.1</factom-client.version>
         <factom-did-models-java-gson.version>0.3.1</factom-did-models-java-gson.version>
         <factom-identity-client.version>0.4.0</factom-identity-client.version>
-        <spring-core.version>5.3.9</spring-core.version>
+        <spring-core.version>6.0.0</spring-core.version>
         <spring-boot.version>2.5.3</spring-boot.version>
         <did-common-java.version>0.3.0</did-common-java.version>
         <uni-resolver-driver.version>0.3.1</uni-resolver-driver.version>
